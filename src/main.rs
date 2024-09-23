@@ -13,7 +13,8 @@ fn main() {
             Arg::new("trim")
                 .short('t')
                 .long("trim")
-                .help("Trim silence from the end of WAV files"),
+                .help("Trim silence from the end of WAV files")
+                .takes_value(false),
         )
         .get_matches();
 
