@@ -22,6 +22,10 @@ That said, you can download the latest Windows release from the [releases page](
 
 Or conceivably you can build it yourself if you have Rust installed. Clone the repository, navigate to the root directory of the repository, and run:
 ```
+
+To specify a single WAV file for processing, use the `-f` or `--file` flag:
+```
+op1-wav-converter -f path/to/your/file.wav
 cargo build --release
 ```
 
@@ -31,7 +35,7 @@ Then you should add it to your PATH, or install it somewhere in your PATH.
 
 What I do is copy the wav files from the OP-1 Field (e.g. the entire `tapes` directory) to my computer's hard drive, then open a command prompt and navigate to that directory (e.g. `cd C:\Users\Dude\MyJams`). Then run the program from the terminal: `op1-wav-converter`.
 
-Or to convert and trim silence from all `.wav` files in the current directory and subdirectories:
+To convert and trim silence from all `.wav` files in the current directory and subdirectories:
 ```
 op1-wav-converter --trim
 ```
