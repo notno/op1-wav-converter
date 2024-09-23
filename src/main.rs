@@ -105,7 +105,7 @@ fn trim_silence(input_path: &Path, output_path: &Path) -> Result<(), Box<dyn std
 
     // Write trimmed samples
     for sample in trimmed_samples {
-        writer.write_sample(*sample)?;
+        writer.write_sample(sample)?;
     }
 
     writer.finalize()?;
