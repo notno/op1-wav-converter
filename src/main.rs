@@ -1,10 +1,23 @@
+use clap::{Arg, Command};
 use hound::{WavReader, WavWriter, WavSpec, SampleFormat};
 use std::path::Path;
 use std::ffi::OsStr;
 use walkdir::WalkDir;
 
 fn main() {
-    // Get the current directory
+    let matches = Command::new("op1_wav_converter")
+        .version("0.1.0")
+        .author("Your Name <your.email@example.com>")
+        .about("Converts and trims WAV files")
+        .arg(
+            Arg::new("trim")
+                .short('t')
+                .long("trim")
+                .help("Trim silence from the end of WAV files"),
+        )
+        .get_matches();
+
+    let trim = matches.is_present("trim");
     let directory = std::env::current_dir().unwrap();
 
     for entry in WalkDir::new(directory)
@@ -14,7 +27,13 @@ fn main() {
     {
         let path = entry.path();
 
-        if is_wav_file(&path){
+        if is_wav_file(&path) {
+            if trim {
+                println!("Trimming silence from {}...", path.display());
+                if let Err(e) = trim_silence(&path, &path.with_extension("TRIM.wav")) {
+                    eprintln!("Error trimming {}: {}", path.display(), e);
+                }
+            } else 
             if let Ok(is_32bit_pcm) = is_32bit_pcm_wav(&path) {
                 if is_32bit_pcm {
                     println!("{} is a 32-bit PCM WAV file. Converting...", path.display());
@@ -71,3 +90,37 @@ fn convert_pcm_to_float(input_path: &Path, output_path: &Path) -> Result<(), Box
     Ok(())
 }
 
+fn trim_silence(input_path: &Path, output_path: &Path) -> Result<(), Box<dyn std::error::Error>> {
+    // Open the input WAV file
+    let mut reader = WavReader::open(input_path)?;
+    let spec = reader.spec();
+
+    // Create the WAV writer
+    let mut writer = WavWriter::create(output_path, spec)?;
+
+    // Read samples and trim silence
+    let samples: Vec<i32> = reader.samples::<i32>().filter_map(Result::ok).collect();
+    let trimmed_samples = trim_silence_from_samples(&samples);
+
+    // Write trimmed samples
+    for sample in trimmed_samples {
+        writer.write_sample(sample)?;
+    }
+
+    writer.finalize()?;
+    Ok(())
+}
+
+fn trim_silence_from_samples(samples: &[i32]) -> &[i32] {
+    let threshold = 1000; // Define a threshold for silence
+    let mut end = samples.len();
+
+    for (i, &sample) in samples.iter().enumerate().rev() {
+        if sample.abs() > threshold {
+            end = i + 1;
+            break;
+        }
+    }
+
+    &samples[..end]
+}
