@@ -20,7 +20,7 @@ fn main() {
             Arg::new("file")
                 .short('f')
                 .long("file")
-                .takes_value(true)
+                .value_parser(clap::value_parser!(String))
                 .value_name("FILE")
                 .help("Specify a single WAV file to process"),
         )
