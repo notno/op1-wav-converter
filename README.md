@@ -3,7 +3,7 @@ Converts Teenage Engineering OP-1 32bit PCM integer WAV files to 32bit float WAV
 
 # Features
 - Converts 32bit PCM integer WAV files to 32bit float WAV files.
-- Optionally trims silence from the end of WAV files using the `--trim` flag.
+- Optionally trims silence from the end of WAV files using the `--trim` flag. (To save space on your hard disk, you know?)
 - Works on all files in this directory and all its children, or optionally specify a single file to convert using the `-f` or `--file` flag.
 
 # Background
@@ -29,7 +29,7 @@ Then you should add it to your PATH, or install it somewhere in your PATH.
 
 What I do is copy the wav files from the OP-1 Field (e.g. the entire `tapes` directory) to my computer's hard drive, then open a command prompt and navigate to that directory (e.g. `cd C:\Users\Dude\MyJams`). Then run the program from the terminal: `op1-wav-converter`.
 
-To convert and trim silence from all `.wav` files in the current directory and subdirectories:
+To convert and trim silence from the end of all `.wav` files in the current directory and subdirectories:
 ```
 op1-wav-converter --trim
 ```
