@@ -17,7 +17,7 @@ fn main() {
         )
         .get_matches();
 
-    let trim = matches.is_present("trim");
+    let trim = matches.contains_id("trim");
     let directory = std::env::current_dir().unwrap();
 
     for entry in WalkDir::new(directory)
@@ -104,7 +104,7 @@ fn trim_silence(input_path: &Path, output_path: &Path) -> Result<(), Box<dyn std
 
     // Write trimmed samples
     for sample in trimmed_samples {
-        writer.write_sample(sample)?;
+        writer.write_sample(*sample)?;
     }
 
     writer.finalize()?;
