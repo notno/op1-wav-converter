@@ -1,5 +1,9 @@
 # op1-wav-converter
-Converts Teenage Engineering OP-1 32bit PCM integer WAV files to 32bit float WAV files for e.g. Ableton Live
+Converts Teenage Engineering OP-1 32bit PCM integer WAV files to 32bit float WAV files for e.g. Ableton Live. Now includes the ability to trim silence from WAV files.
+
+# Features
+- Converts 32bit PCM integer WAV files to 32bit float WAV files.
+- Optionally trims silence from WAV files using the `--trim` flag.
 
 # Background
 The Teenage Engineering OP-1 Field exports 32bit PCM integer WAV files. These files are not directly compatible with Ableton Live, which expects 32bit float WAV files. This is a small utility to convert all `.wav` files in a directory and subdirectories to 32bit float WAV files.
@@ -7,6 +11,9 @@ The Teenage Engineering OP-1 Field exports 32bit PCM integer WAV files. These fi
 This little program will recursively search for all files with the extension `.wav`, starting in the current directory, and convert them to 32bit float WAV files, (leaving the originals in place).
 
 **I have only tested it on Windows 11 Powershell**. Let me know if you try it on Linux or MacOS!
+
+# Dependencies
+- The `ffmpeg` dependency has been removed. Ensure you have the necessary Rust dependencies installed.
 
 # Usage
 You can download the latest Windows release from the [releases page](https://github.com/notno/op1-wav-converter/releases).
