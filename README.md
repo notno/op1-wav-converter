@@ -6,7 +6,7 @@ The Teenage Engineering OP-1 Field exports 32bit PCM integer WAV files. These fi
 
 This little program will recursively search for all files with the extension `.wav`, starting in the current directory, and convert them to 32bit float WAV files, (leaving the originals in place).
 
-**I have only tested it on Windows 11 Powershell**. Let me know if you try it on Linux or MacOS!
+**I have only tested it on Windows 11**. Let me know if you try it on Linux or MacOS!
 
 # Usage
 You can download the latest Windows release from the [releases page](https://github.com/notno/op1-wav-converter/releases).
