@@ -42,7 +42,6 @@ fn main() {
         }
     }
 }
-}
 
 fn process_file(path: &Path, trim: bool) {
     if is_wav_file(&path) {
@@ -62,6 +61,7 @@ fn process_file(path: &Path, trim: bool) {
             }
         }
     }
+}
 
 fn is_wav_file(path: &Path) -> bool {
     path.extension() == Some(OsStr::new("wav"))
