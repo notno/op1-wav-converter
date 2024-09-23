@@ -110,16 +110,23 @@ fn trim_silence(input_path: &Path, output_path: &Path) -> Result<(), Box<dyn std
     let mut reader = WavReader::open(input_path)?;
     let spec = reader.spec();
 
-    // Create the WAV writer
-    let mut writer = WavWriter::create(output_path, spec)?;
+    // Create the WAV writer with 32-bit float specification
+    let output_spec = WavSpec {
+        channels: spec.channels,
+        sample_rate: spec.sample_rate,
+        bits_per_sample: 32,
+        sample_format: SampleFormat::Float,
+    };
+    let mut writer = WavWriter::create(output_path, output_spec)?;
 
     // Read samples and trim silence
     let samples: Vec<i32> = reader.samples::<i32>().filter_map(Result::ok).collect();
     let trimmed_samples = trim_silence_from_samples(&samples, spec.channels);
 
-    // Write trimmed samples
+    // Convert trimmed samples to 32-bit float and write them
     for sample in trimmed_samples {
-        writer.write_sample(sample)?;
+        let float_sample = sample as f32 / std::i32::MAX as f32;
+        writer.write_sample(float_sample)?;
     }
 
     writer.finalize()?;
