@@ -16,7 +16,6 @@ fn main() {
                 .help("Trim silence from the end of WAV files")
                 .action(clap::ArgAction::SetTrue),
         )
-        )
         .arg(
             Arg::new("file")
                 .short('f')
