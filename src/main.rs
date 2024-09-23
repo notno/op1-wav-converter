@@ -16,38 +16,52 @@ fn main() {
                 .help("Trim silence from the end of WAV files")
                 .action(clap::ArgAction::SetTrue),
         )
+        )
+        .arg(
+            Arg::new("file")
+                .short('f')
+                .long("file")
+                .takes_value(true)
+                .value_name("FILE")
+                .help("Specify a single WAV file to process"),
+        )
         .get_matches();
 
     let trim = matches.contains_id("trim");
-    let directory = std::env::current_dir().unwrap();
-
-    for entry in WalkDir::new(directory)
-        .into_iter()
-        .filter_map(Result::ok)
-        .filter(|e| e.file_type().is_file())
-    {
-        let path = entry.path();
-
-        if is_wav_file(&path) {
-            if trim {
-                println!("Trimming silence from {}...", path.display());
-                if let Err(e) = trim_silence(&path, &path.with_extension("TRIM.wav")) {
-                    eprintln!("Error trimming {}: {}", path.display(), e);
-                }
-            } else 
-            if let Ok(is_32bit_pcm) = is_32bit_pcm_wav(&path) {
-                if is_32bit_pcm {
-                    println!("{} is a 32-bit PCM WAV file. Converting...", path.display());
-                    if let Err(e) = convert_pcm_to_float(&path, &path.with_extension("float32.wav")) {                     
-                        eprintln!("Error converting {} to 32-bit float: {}", path.display(), e);
-                    }
-                } else {
-                    println!("{} is not a 32-bit PCM WAV file", path.display());
-                }
-            }
+    if let Some(file_path) = matches.get_one::<String>("file") {
+        let path = Path::new(file_path);
+        process_file(path, trim);
+    } else {
+        let directory = std::env::current_dir().unwrap();
+        for entry in WalkDir::new(directory)
+            .into_iter()
+            .filter_map(Result::ok)
+            .filter(|e| e.file_type().is_file())
+        {
+            let path = entry.path();
+            process_file(path, trim);
         }
     }
 }
+
+fn process_file(path: &Path, trim: bool) {
+    if is_wav_file(&path) {
+        if trim {
+            println!("Trimming silence from {}...", path.display());
+            if let Err(e) = trim_silence(&path, &path.with_extension("TRIM.wav")) {
+                eprintln!("Error trimming {}: {}", path.display(), e);
+            }
+        } else if let Ok(is_32bit_pcm) = is_32bit_pcm_wav(&path) {
+            if is_32bit_pcm {
+                println!("{} is a 32-bit PCM WAV file. Converting...", path.display());
+                if let Err(e) = convert_pcm_to_float(&path, &path.with_extension("float32.wav")) {
+                    eprintln!("Error converting {} to 32-bit float: {}", path.display(), e);
+                }
+            } else {
+                println!("{} is not a 32-bit PCM WAV file", path.display());
+            }
+        }
+    }
 
 fn is_wav_file(path: &Path) -> bool {
     path.extension() == Some(OsStr::new("wav"))
