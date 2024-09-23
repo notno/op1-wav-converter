@@ -101,7 +101,7 @@ fn trim_silence(input_path: &Path, output_path: &Path) -> Result<(), Box<dyn std
 
     // Read samples and trim silence
     let samples: Vec<i32> = reader.samples::<i32>().filter_map(Result::ok).collect();
-    let trimmed_samples = trim_silence_from_samples(&samples);
+    let trimmed_samples = trim_silence_from_samples(&samples, spec.channels);
 
     // Write trimmed samples
     for sample in trimmed_samples {
@@ -112,16 +112,35 @@ fn trim_silence(input_path: &Path, output_path: &Path) -> Result<(), Box<dyn std
     Ok(())
 }
 
-fn trim_silence_from_samples(samples: &[i32]) -> &[i32] {
+fn trim_silence_from_samples(samples: &[i32], channels: u16) -> Vec<i32> {
     let threshold = 1000; // Define a threshold for silence
-    let mut end = samples.len();
+    let mut trimmed_samples = vec![Vec::new(); channels as usize];
 
-    for (i, &sample) in samples.iter().enumerate().rev() {
-        if sample.abs() > threshold {
-            end = i + 1;
-            break;
+    // Separate samples into channels
+    for (i, &sample) in samples.iter().enumerate() {
+        trimmed_samples[i % channels as usize].push(sample);
+    }
+
+    // Trim silence from each channel
+    for ch_samples in &mut trimmed_samples {
+        let mut end = ch_samples.len();
+        for (i, &sample) in ch_samples.iter().enumerate().rev() {
+            if sample.abs() > threshold {
+                end = i + 1;
+                break;
+            }
+        }
+        ch_samples.truncate(end);
+    }
+
+    // Recombine channels into interleaved format
+    let mut interleaved_samples = Vec::new();
+    let min_length = trimmed_samples.iter().map(|ch| ch.len()).min().unwrap_or(0);
+    for i in 0..min_length {
+        for ch in 0..channels as usize {
+            interleaved_samples.push(trimmed_samples[ch][i]);
         }
     }
 
-    &samples[..end]
+    interleaved_samples
 }
