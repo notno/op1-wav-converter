@@ -42,6 +42,7 @@ fn main() {
         }
     }
 }
+}
 
 fn process_file(path: &Path, trim: bool) {
     if is_wav_file(&path) {
